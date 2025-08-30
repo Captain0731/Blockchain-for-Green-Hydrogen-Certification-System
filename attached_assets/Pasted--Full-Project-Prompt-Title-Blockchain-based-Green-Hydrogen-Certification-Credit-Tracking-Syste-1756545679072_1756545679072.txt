@@ -1,0 +1,158 @@
+📌 Full Project Prompt
+
+Title: Blockchain-based Green Hydrogen Certification & Credit Tracking System (with 3D Visualization)
+
+🔧 Tech Stack
+
+Backend: Python (Flask)
+
+Database: SQLite (for testing; can migrate to PostgreSQL/MySQL)
+
+Frontend: HTML5, CSS3, Tailwind or Bootstrap, Dark/Light theme support
+
+3D Visualization: Three.js (WebGL) for 3D dashboard & blockchain explorer
+
+Blockchain: Simulated blockchain ledger in Python (basic proof-of-work and hashing for demo)
+
+🌍 Core Features
+1. Authentication
+
+Login / Signup system using Flask-Login
+
+Secure password hashing (Werkzeug)
+
+Session-based authentication
+
+2. Pages
+
+Home Page → Overview of green hydrogen certification
+
+Login / Signup Page → User account creation & login forms
+
+Dashboard Page →
+
+User profile
+
+Issued certificates overview
+
+Credit balances & transfers
+
+Blockchain explorer (3D view)
+
+3. Dashboard Sections
+
+Profile Section: User details, total credits, account info
+
+Certificates Section: Issue, view, and verify hydrogen certificates
+
+Credits Section: Add, transfer, or redeem hydrogen credits
+
+Blockchain Explorer: Interactive 3D chain of blocks with block details (index, timestamp, hash, transactions)
+
+4. Blockchain Simulation
+
+Each transaction (certificate issuance, credit transfer) is recorded in a block
+
+Simple proof-of-work mining for demo purposes
+
+Blocks chained with hashes & displayed in a 3D blockchain explorer
+
+🎨 Design Requirements
+
+Theme:
+
+Dark & Light theme toggle
+
+Dark Mode → Background #0f1724, text #e6eef6
+
+Light Mode → Background #ffffff, text #0b1220
+
+Accent Colors → Light Green (#32CD32), Blue (#1E90FF)
+
+Layout:
+
+Sidebar navigation (Home, Certificates, Credits, Blockchain, Profile)
+
+Navbar with theme toggle
+
+Dashboard cards & widgets for certificates, credits, and blockchain status
+
+Responsive grid-based design
+
+🗄 Database (SQLite for testing)
+
+users → id, username, email, password_hash, created_at
+
+certificates → id, user_id, certificate_id, issue_date, status, meta_json
+
+credits → id, user_id, amount, transaction_type, date, meta_json
+
+blocks → id, index, previous_hash, timestamp, transactions_json, nonce, hash
+
+🌐 Routes (Flask)
+
+/ → Home (overview)
+
+/signup → Register a new user
+
+/login → Login page
+
+/logout → Logout user
+
+/dashboard → Main dashboard
+
+/certificates → Manage & issue hydrogen certificates
+
+/transfer_credits → Transfer credits to other users
+
+/blockchain → 3D blockchain explorer page
+
+/api/blocks → JSON endpoint with blockchain data
+
+/api/transactions → JSON endpoint with transactions
+
+🖼 UI Components
+
+Sidebar Navigation → Icons for navigation (Certificates, Credits, Blockchain, Profile)
+
+Navbar → App title, theme toggle, profile menu
+
+Dashboard Cards →
+
+Credits balance (3D coin stack animation)
+
+Certificates (3D card visualization)
+
+Blockchain health status
+
+Tables & Lists → Certificates, credit transactions
+
+3D Blockchain Explorer →
+
+Blocks as 3D cubes linked in space
+
+Clickable to show details (timestamp, transactions, hash)
+
+Orbit controls to rotate & zoom
+
+Animations →
+
+Blocks glow while mining
+
+Coin/credit transfer animation between users
+
+Certificates flip like 3D cards
+
+🚀 Deliverables
+
+Flask project structure with routes, templates, and static assets
+
+SQLite database for quick testing
+
+Authentication system with secure password storage
+
+Blockchain simulator with block + transaction handling
+
+Dark/Light responsive UI
+
+3D dashboard widgets + blockchain explorer (Three.js integration)
