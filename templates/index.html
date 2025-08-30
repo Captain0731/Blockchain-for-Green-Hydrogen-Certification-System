@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Green Hydrogen Platform{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="hero-title">Green Hydrogen Certification Platform</h1>
+                    <p class="hero-subtitle">
+                        Track, verify, and trade green hydrogen certificates on a transparent blockchain-powered platform.
+                        Join the future of clean energy certification.
+                    </p>
+                    <div class="hero-features">
+                        <div class="feature">
+                            <i class="fas fa-certificate text-success"></i>
+                            <span>Digital Certificates</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-cubes text-primary"></i>
+                            <span>Blockchain Verified</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-coins text-warning"></i>
+                            <span>Credit Trading</span>
+                        </div>
+                    </div>
+                    <div class="hero-actions">
+                        {% if not current_user.is_authenticated %}
+                            <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg me-3">
+                                <i class="fas fa-user-plus me-2"></i>Get Started
+                            </a>
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div id="hero-3d" class="hero-3d-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="features-section py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2>Why Choose Our Platform?</h2>
+                <p class="text-muted">Advanced technology meets environmental responsibility</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Secure & Transparent</h4>
+                    <p>Every transaction is recorded on our blockchain ledger, ensuring complete transparency and immutability.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h4>Environmental Impact</h4>
+                    <p>Track the carbon footprint and environmental benefits of your green hydrogen production.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Real-time Analytics</h4>
+                    <p>Access comprehensive dashboards with 3D visualizations and real-time market data.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard-3d.js') }}"></script>
+<script>
+    // Initialize hero 3D visualization
+    document.addEventListener('DOMContentLoaded', function() {
+        const heroContainer = document.getElementById('hero-3d');
+        if (heroContainer) {
+            initHero3D(heroContainer);
+        }
+    });
+    
+    function initHero3D(container) {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        renderer.setSize(container.offsetWidth, container.offsetHeight);
+        renderer.setClearColor(0x000000, 0);
+        container.appendChild(renderer.domElement);
+        
+        // Create rotating hydrogen molecules
+        const geometry = new THREE.SphereGeometry(0.3, 16, 16);
+        const material = new THREE.MeshPhongMaterial({ color: 0x32CD32 });
+        
+        const molecules = [];
+        for (let i = 0; i < 5; i++) {
+            const molecule = new THREE.Mesh(geometry, material);
+            molecule.position.set(
+                (Math.random() - 0.5) * 4,
+                (Math.random() - 0.5) * 4,
+                (Math.random() - 0.5) * 4
+            );
+            scene.add(molecule);
+            molecules.push(molecule);
+        }
+        
+        // Add lights
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(1, 1, 1);
+        scene.add(directionalLight);
+        
+        camera.position.z = 5;
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            molecules.forEach((molecule, index) => {
+                molecule.rotation.x += 0.01;
+                molecule.rotation.y += 0.01;
+                molecule.position.y += Math.sin(Date.now() * 0.001 + index) * 0.002;
+            });
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.offsetWidth / container.offsetHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.offsetWidth, container.offsetHeight);
+        });
+    }
+</script>
+{% endblock %}

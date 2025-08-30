@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Green Hydrogen Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Welcome back, {{ current_user.username }}!</h2>
+            <p class="text-muted">Here's your green hydrogen platform overview</p>
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-icon bg-success">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="stats-content">
+                    <h3>{{ total_credits }}</h3>
+                    <p>Total Credits</p>
+                    <div id="credits-3d" class="stats-3d"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-icon bg-primary">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <div class="stats-content">
+                    <h3>{{ total_certificates }}</h3>
+                    <p>Certificates</p>
+                    <div id="certificates-3d" class="stats-3d"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-icon bg-info">
+                    <i class="fas fa-cubes"></i>
+                </div>
+                <div class="stats-content">
+                    <h3>{{ blockchain_stats.total_blocks }}</h3>
+                    <p>Blockchain Blocks</p>
+                    <div id="blocks-3d" class="stats-3d"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-icon bg-warning">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div class="stats-content">
+                    <h3>Active</h3>
+                    <p>Network Status</p>
+                    <div class="status-indicator active"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Content Sections -->
+    <div class="row g-4">
+        <!-- Recent Certificates -->
+        <div class="col-lg-6">
+            <div class="content-card">
+                <div class="content-header">
+                    <h4><i class="fas fa-certificate me-2"></i>Recent Certificates</h4>
+                    <a href="{{ url_for('certificates') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="content-body">
+                    {% if recent_certificates %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Certificate ID</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cert in recent_certificates %}
+                                    <tr>
+                                        <td><code>{{ cert.certificate_id }}</code></td>
+                                        <td>{{ cert.issue_date.strftime('%Y-%m-%d') }}</td>
+                                        <td><span class="badge bg-success">{{ cert.status.title() }}</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-certificate fa-3x text-muted mb-3"></i>
+                            <p>No certificates issued yet</p>
+                            <a href="{{ url_for('certificates') }}" class="btn btn-primary">Issue Certificate</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Credit Transactions -->
+        <div class="col-lg-6">
+            <div class="content-card">
+                <div class="content-header">
+                    <h4><i class="fas fa-coins me-2"></i>Recent Transactions</h4>
+                    <a href="{{ url_for('credits') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="content-body">
+                    {% if recent_credits %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for credit in recent_credits %}
+                                    <tr>
+                                        <td>
+                                            {% if credit.transaction_type == 'add' %}
+                                                <span class="badge bg-success">Added</span>
+                                            {% elif credit.transaction_type == 'transfer_in' %}
+                                                <span class="badge bg-info">Received</span>
+                                            {% elif credit.transaction_type == 'transfer_out' %}
+                                                <span class="badge bg-warning">Sent</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ credit.amount }}</td>
+                                        <td>{{ credit.date.strftime('%Y-%m-%d') }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-coins fa-3x text-muted mb-3"></i>
+                            <p>No transactions yet</p>
+                            <a href="{{ url_for('credits') }}" class="btn btn-primary">Manage Credits</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard-3d.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize 3D stats visualizations
+        initCredits3D('credits-3d', {{ total_credits }});
+        initCertificates3D('certificates-3d', {{ total_certificates }});
+        initBlocks3D('blocks-3d', {{ blockchain_stats.total_blocks }});
+    });
+</script>
+{% endblock %}

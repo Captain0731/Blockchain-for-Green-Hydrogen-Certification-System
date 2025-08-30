@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Credits - Green Hydrogen Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-coins me-2"></i>Credit Management</h2>
+            <p class="text-muted">Manage your green hydrogen credits and transfers</p>
+        </div>
+    </div>
+    
+    <!-- Credit Balance -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="credit-balance-card">
+                <div class="balance-content">
+                    <div class="balance-amount">
+                        <i class="fas fa-coins text-warning"></i>
+                        <span>{{ total_credits }}</span>
+                        <small>Total Credits</small>
+                    </div>
+                    <div id="balance-3d" class="balance-3d"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Credit Actions -->
+    <div class="row mb-4 g-4">
+        <!-- Add Credits -->
+        <div class="col-lg-6">
+            <div class="content-card">
+                <div class="content-header">
+                    <h4><i class="fas fa-plus-circle me-2"></i>Add Credits</h4>
+                </div>
+                <div class="content-body">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="add">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount</label>
+                            <input type="number" class="form-control" id="amount" name="amount" 
+                                   step="0.01" min="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="source" class="form-label">Source</label>
+                            <select class="form-select" id="source" name="source" required>
+                                <option value="">Select Source</option>
+                                <option value="production_bonus">Production Bonus</option>
+                                <option value="government_incentive">Government Incentive</option>
+                                <option value="carbon_offset">Carbon Offset Program</option>
+                                <option value="partner_reward">Partner Reward</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-plus me-2"></i>Add Credits
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Transfer Credits -->
+        <div class="col-lg-6">
+            <div class="content-card">
+                <div class="content-header">
+                    <h4><i class="fas fa-exchange-alt me-2"></i>Transfer Credits</h4>
+                </div>
+                <div class="content-body">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="transfer">
+                        <div class="mb-3">
+                            <label for="recipient" class="form-label">Recipient Username</label>
+                            <input type="text" class="form-control" id="recipient" name="recipient" 
+                                   placeholder="Enter username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="transfer_amount" class="form-label">Amount</label>
+                            <input type="number" class="form-control" id="transfer_amount" name="amount" 
+                                   step="0.01" min="0.01" max="{{ total_credits }}" required>
+                            <div class="form-text">Available: {{ total_credits }} credits</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" 
+                                {% if total_credits <= 0 %}disabled{% endif %}>
+                            <i class="fas fa-paper-plane me-2"></i>Transfer Credits
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Transaction History -->
+    <div class="row">
+        <div class="col-12">
+            <div class="content-card">
+                <div class="content-header">
+                    <h4><i class="fas fa-history me-2"></i>Transaction History</h4>
+                    <span class="badge bg-info">{{ credits|length }} Transactions</span>
+                </div>
+                <div class="content-body">
+                    {% if credits %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for credit in credits %}
+                                    <tr>
+                                        <td>{{ credit.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td>
+                                            {% if credit.transaction_type == 'add' %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-plus me-1"></i>Added
+                                                </span>
+                                            {% elif credit.transaction_type == 'transfer_in' %}
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-arrow-down me-1"></i>Received
+                                                </span>
+                                            {% elif credit.transaction_type == 'transfer_out' %}
+                                                <span class="badge bg-warning">
+                                                    <i class="fas fa-arrow-up me-1"></i>Sent
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="fw-bold">{{ credit.amount }}</td>
+                                        <td>
+                                            {% set meta = credit.get_meta() %}
+                                            {% if credit.transaction_type == 'add' %}
+                                                Source: {{ meta.get('source', 'Unknown').replace('_', ' ').title() }}
+                                            {% elif credit.transaction_type == 'transfer_in' %}
+                                                From: {{ meta.get('sender_username', 'Unknown') }}
+                                            {% elif credit.transaction_type == 'transfer_out' %}
+                                                To: {{ meta.get('recipient_username', 'Unknown') }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-coins fa-3x text-muted mb-3"></i>
+                            <h5>No Transactions Yet</h5>
+                            <p>Add or transfer credits to see your transaction history.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard-3d.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize 3D balance visualization
+        initCredits3D('balance-3d', {{ total_credits }});
+        
+        // Add credit transfer animation
+        const transferForm = document.querySelector('form[action*="transfer"]');
+        if (transferForm) {
+            transferForm.addEventListener('submit', function() {
+                // Add visual feedback for transfer
+                const button = this.querySelector('button[type="submit"]');
+                button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+                button.disabled = true;
+            });
+        }
+    });
+</script>
+{% endblock %}
